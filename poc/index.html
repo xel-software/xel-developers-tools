@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>XEL Messenger v0.1</title>
+	<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"></script>
+<style>
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial;
+  background-color: #000;
+}
+
+.box {
+  padding: 1em;
+}
+
+input {
+  width: 100%;
+  padding: 1em;
+  outline: none;
+  border: 1px solid #f2f2f2;
+}
+
+.message-list {
+  margin: 0;
+  padding: 0;
+}
+
+.message-list li {
+  padding: .2em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  background-color: #f2f2f2;
+}
+
+.app-layout {
+  display: grid;
+  height: 100vh;
+  grid-template-columns: auto;
+  grid-template-rows: auto 1fr auto;
+}
+
+.header     { background-color: #e6ecf0; }
+.teams      { background-color: #fff; text-align: center; color: #333;}
+.channels   { background-color: #e6ecf0;}
+.main   { background-color: #eee; color: #333;}
+.write      { background-color: #f2f2f2; }
+.login		{ background-color: #f2f2f2; }
+
+.header {
+  grid-column: 1;
+  grid-row: 1;
+  border-bottom: 1px solid #ccc;
+  color: #333;
+}
+
+.main {
+  grid-column: 1;
+  grid-row: 2;
+  padding: 0 1em;
+  overflow-y: scroll;
+}
+.notify {
+	display: none;
+	width:50%;
+	float:right;
+	margin: 0.1em;
+	padding:0.5em;
+}
+.input {
+  grid-column: 1;
+  grid-row: 3;
+  background-color: #e6ecf0;
+}
+
+div.message{
+	margin: 2em;
+	padding: 1em;
+	background-color: #fff;
+}
+
+.notice {
+	border: 1px solid #006600;
+	background-color: #00cc00;
+}
+.error {
+	background-color: #996666;
+	color: #eee;
+}
+div.message_body {
+	padding-top: 0.5em;
+	padding-left: 0.8em ;
+}
+span.sender {
+	font-weight: bold;
+}
+span.datatime {
+	font-size: 80%;
+	color: #aaa;
+}
+.account_note {
+	font-weight: normal;
+	font-size: 90%;
+	color: #999;
+}
+a.selected_channel {
+	font-weight: bold;
+	color: #000;
+	border: 1px solid #aaa;
+	//background-color: #e60cf0;
+}
+#current_login_account {
+	margin:0.3em 0.3em;
+	margin-bottom: 0.5em;
+	color: #333;
+}
+#current_login_name {
+	font-size: 120%;
+}
+#select_node {
+	width: 90%;
+}
+.app_info {
+	font-size: 75%;
+	margin-left: 3em;
+	border: 1px solid #aaa;
+	padding: 0.5em;
+	margin-top: 1.5em;
+}
+.message_body span.at_reply {
+	color: #4ab3f4;
+}
+span.at_reply:hover, .repliable span.sender:hover {
+	cursor: pointer;
+}
+
+
+div.self {
+	float:right;
+	clear:both;
+	/* align-self: flex-end; */
+}
+div.direct_message {
+	width: 45%;
+	min-width: 190px;
+	clear: both;
+}
+.extra_about p, #modal_about p {
+	margin: 1em 0.6em;
+	font-size:110%;
+}
+.extra_about li, #modal_about li {
+	padding:0.3em;
+}
+#account_balance {
+	color:#aaa;
+	font-size:80%;
+}
+.unconfirmed_direct_messages {
+	/* display: flex; */
+	 /* flex-direction: column; */
+}
+</style>
+<style>
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 80%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+
+@-webkit-keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
+.close {
+    color: #555;
+    float: right;
+    font-size: 25px;
+    font-weight: bold;
+	margin-right:5px;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-header {
+    padding: 2px 16px;
+    background-color: #e6ecf0;
+    color: #666;
+}
+
+.modal-body {padding: 1em 1em 1em 1em;}
+
+.modal-footer {
+    padding: 2px 16px;
+    background-color: #5cb85c;
+    color: white;
+}
+.action_buttons{
+	float:right;
+	margin-right:3em;
+}
+.action_buttons button, .modal button, button.unfollow, .fixed_content button, button.hang_up{
+	font-size:110%;
+	color: #fff;
+	background-color: #4ab3f4;
+	border-radius: 8px;
+	padding:8px 12px;
+	font-weight: bold;
+	text-decoration: none;
+	border: none;
+}
+button.unfollow{
+	background-color: red;
+}
+button.hang_up{
+	background-color: red;
+	font-size:100%;
+}
+button#btn_tweet {
+	display:none;
+}
+.modal textarea {
+	width:100%;
+	height: 6em;
+}
+.unconfirmed_message{
+    background-color: #ffff00;
+    -webkit-animation-name: example; /* Safari 4.0 - 8.0 */
+    -webkit-animation-duration: 4s; /* Safari 4.0 - 8.0 */
+	//animation-iteration-count: infinite;
+    //animation-name: slow_blink;
+   // animation-duration: 3s;
+}
+.time_left {
+    background-color: #ffff00;
+	padding:1px 5px;
+    -webkit-animation-name: example; /* Safari 4.0 - 8.0 */
+    -webkit-animation-duration: 4s; /* Safari 4.0 - 8.0 */
+	animation-iteration-count: infinite;
+    animation-name: slow_blink;
+    animation-duration: 3s;
+}
+
+@keyframes slow_blink {
+    from {background-color: #ffffaa;}
+    to {background-color: white;}
+}
+</style>
+</head>
+<body>
+<div id="modal_login" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="close">&times;</span>
+      <h3></h3>
+    </div>
+    <div class="modal-body">
+		<input type="password" style="text-align:left;margin-top:8px;height:1em;" id="text_passphrase" placeholder='Input Passphrase here to Login.'></input>
+		<p style="text-align:right;"><button id="_login" style="">Login</button></p>
+    </div>
+  </div>
+</div>
+<div id="modal_about" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="close">&times;</span>
+      <h3>About</h3>
+    </div>
+    <div class="modal-body">
+		<p>This is a concept private chat dApp using XEL platform.</p>
+		<p>It sending encrypted messages with 0.1 fee .</p>
+		<p>That's means messages are gone after deadlines(30 mins by default), they are <strong>Burning</strong>. :)
+		<p>but for chatting that's quite enough, and even with some advantages:</p>
+		<p>
+			<ul>
+				<li>Messages are instant, depends on the speed of broadcasting, no longer depends on blocktime.</li>
+				<li>No one can dig your chat history even steal your paraphrase, all messages are gone after deadlines.</li>
+				<li>It's 0.1 fee, a account with public key is the only thing you need.</li>
+				<li>Donate to developers if you like it XEL-MAYC-ZZ3Y-YX56-6NH52 .</li>
+			</ul>
+		</p>
+
+    </div>
+  </div>
+</div>
+
+<div class='app-layout'>
+    <div class='header box'>
+
+		<div><span id='recipient_name'></span>:</div>
+
+		<input type="text" style="text-align:left;margin-top:8px;height:1em;font-size:120%;" id="account_message_recipient" placeholder='Input XEL address of Recipient here.'></input>
+		<!--<button id="_hang_up" style="margin-left:10px;" onclick="hang_up()" class="hang_up">Hang up</button>-->
+	</div>
+    <div class='main box' style=''>
+		<div class="unconfirmed_direct_messages"></div>
+    </div>
+	<div class="box input fixed_content extra_direct_messages"  style="">
+			<div class="notify"><span class="close">&times;</span><span class="text"></span></div>
+			<div id='current_login_name'></div>
+			<div id='current_login_account'></div>
+		<textarea type='text' placeholder='Max 500 characters. Press Ctrl+Enter to Send.' id='_direct_message' maxlength="500" style="width:100%;height:100px;"></textarea>
+		<p style="text-align:right;"><button id="_send_direct_message" style="display:none;" onclick="send_direct_message()">Send</button><button id="btn_login" style='margin-left:10px;'>Login</button><button id="btn_about" style='margin-left:10px;'>About</button></p>
+	</div>
+  </div>
+
+  </body>
+  <script>
+ 		$('.notify span.close').click(function() {
+			$('.notify').hide();
+		});
+		$('#btn_login').click(function() {
+			$('#modal_login .modal-header h3').text($(this).text());
+			$('#modal_login #_login').text($(this).text());
+			$('#modal_login').show();
+		});
+		$('#modal_login span.close').click(function() {
+			$('#modal_login').hide();
+		});
+		$('#_login').click(function() {
+			_passphrase = $("#text_passphrase").val();
+			if(_passphrase) {
+				_login();
+				$('#modal_login').hide();
+			}
+		});
+		$("#btn_about").click(function() {
+			$('#modal_about').show();
+		});
+		$('#modal_about span.close').click(function() {
+			$('#modal_about').hide();
+		});
+
+	window.onclick = function(event) {
+		if (event.target.className == 'modal') {
+			event.target.style.display = "none";
+		}
+	}
+  </script>
+  <script>
+		var VERSION = 'v0.1';
+		var MAX_MESSAGES = 100;
+		var FEE_XEL = 0.0000001;
+		var REFRESH_TIMS = 3;
+		var AUTO_LOGIN = true;
+		var DEADLINE = 30;
+		var FEE_NQT = 0;
+		var DEFAULT_TITLE = "XEL Messenger " + VERSION;
+
+		var _passphrase_key = window.location.href + '_a' + VERSION;
+		var _recipient_key = window.location.href + '_a_recp' + VERSION;
+		var _node_url = "http://xel.org:17876/nxt";
+
+		var _current_login_account;
+		var _passphrase;
+
+		var _last_message_timestamp;
+
+		var _current_direct_message_recipient;
+		var recipient_name = '- No Name -';
+		var sender_name = '- No Name -';
+
+		var entityMap = {
+		  '&': '&amp;',
+		  '<': '&lt;',
+		  '>': '&gt;',
+		  '"': '&quot;',
+		  "'": '&#39;',
+		  '/': '&#x2F;',
+		  '`': '&#x60;',
+		  '=': '&#x3D;'
+		};
+
+		function escapeHtml(string) {
+		  return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+			return entityMap[s];
+		  });
+		}
+
+		Array.prototype.last = function() {return this[this.length-1];}
+
+		function _login() {
+			  $.ajax({url: _node_url, data: {'requestType': 'getAccountId', 'secretPhrase': _passphrase },
+				success: function(data) {
+					_current_login_account = $.parseJSON(data)["accountRS"];
+					$("#current_login_account").text(_current_login_account);
+
+					$.ajax({url: _node_url, data: {'requestType': 'getAccount', 'account': _current_login_account }, async: false,
+							success: function(data) {
+								var name = $.parseJSON(data)["name"];
+								if (name && name.length > 0) {
+									sender_name = name;
+								}else {
+									sender_name = '- No Name -';
+								}
+								$('#current_login_name').text(sender_name);
+								$("#btn_login").text('Change User');
+						}
+					});
+					$("#_send_direct_message").show();
+					show_unconfirm_direct_messages();
+					if(localStorage && AUTO_LOGIN){ localStorage.setItem(_passphrase_key, _passphrase); }
+				},
+				error: function() {
+					show_error('error login');
+				}
+			});
+		}
+		var blink_msg;
+		function blink_title() {
+			blink_msg = ((blink_msg == '!!New Message!!') ? DEFAULT_TITLE : '!!New Message!!');
+			$("title").text(blink_msg);
+		}
+		var interval;
+
+		$(window).focus(function () {
+			clearInterval(interval);
+			interval = null;
+			$("title").text(DEFAULT_TITLE);
+		});
+
+		function notify_new_message() {
+			if (!document.hasFocus() && !interval) {
+				interval = setInterval(blink_title, 700);
+			}
+		}
+		var down = false;
+		$(document).mousedown(function() {
+			down = true;
+		}).mouseup(function() {
+			down = false;
+		});
+		function show_unconfirm_direct_messages() {
+				//$("div.unconfirmed_direct_messages").empty();
+				if(!_current_login_account){
+					$("div.unconfirmed_direct_messages").empty();
+					return;
+				}
+				_current_direct_message_recipient = $("#account_message_recipient").val();
+				if(!_current_direct_message_recipient){
+					$("div.unconfirmed_direct_messages").empty();
+					return;
+				}
+				$.ajax({url: _node_url, data: {'requestType': 'getUnconfirmedTransactions', 'chain': 2, 'account': _current_login_account, 'account': _current_direct_message_recipient, 'lastIndex': MAX_MESSAGES}, async: false,
+					success: function(data) {
+						var rtn_msg = $.parseJSON(data);
+						if(rtn_msg['errorDescription']) {
+							$("div.unconfirmed_direct_messages").empty();
+							show_error('Error getting message: ' + rtn_msg['errorDescription']);
+						} else {
+							rtn_msg['unconfirmedTransactions'] = rtn_msg['unconfirmedTransactions'].sort(function(a,b){ return a['timestamp'] - b['timestamp']});
+							if(rtn_msg['unconfirmedTransactions'].length > 0)
+								_last_message_timestamp = _last_message_timestamp || rtn_msg['unconfirmedTransactions'].last()['timestamp'];
+
+							var all_html = "";
+							for(var i = 0; i<rtn_msg['unconfirmedTransactions'].length; i++) {
+								var msg = rtn_msg['unconfirmedTransactions'][i];
+								if(msg && msg['attachment']['encryptedMessage'] && msg['attachment']['encryptedMessage']['isText']) {
+									if(msg['senderRS'] == _current_login_account || msg['senderRS'] == _current_direct_message_recipient) {
+											$.ajax({url: _node_url, data: {'requestType': 'decryptFrom', 'account': _current_direct_message_recipient, 'data': msg['attachment']['encryptedMessage']['data'], 'nonce': msg['attachment']['encryptedMessage']['nonce'], 'decryptedMessageIsText': true, 'secretPhrase': _passphrase  }, async: false,
+													success: function(data) {
+														var message = $.parseJSON(data)["decryptedMessage"];
+														if (message) {
+															msg['attachment']['message'] = message;
+															var html = build_unconfirm_direct_message_tag(msg);
+															all_html = all_html + html;
+															//$("div.unconfirmed_direct_messages").append(html);
+														}
+											}
+											});
+									}
+								}
+							}
+							$("div.unconfirmed_direct_messages").html(all_html);
+							if(rtn_msg['unconfirmedTransactions'].last() && rtn_msg['unconfirmedTransactions'].last()['timestamp'] > _last_message_timestamp) {
+								_last_message_timestamp = rtn_msg['unconfirmedTransactions'].last()['timestamp'];
+								notify_new_message();
+							}
+							if(!down)
+								$("div.main").animate({scrollTop: $("div.main").prop("scrollHeight")} , 1);
+						}
+					}
+				});
+
+		}
+
+		function show_notice(msg) {
+				$('.notify .text').text(msg);
+				$('.notify').removeClass('error');
+				$('.notify').addClass('notice');
+				$('.notify').show();
+		}
+		function show_error(msg) {
+				$('.notify .text').text(msg);
+				$('.notify').removeClass('notice');
+				$('.notify').addClass('error');
+				$('.notify').show();
+		}
+
+		$("#account_message_recipient").change(function() {
+			_current_direct_message_recipient = $(this).val();
+			get_recipient_name();
+			show_unconfirm_direct_messages();
+			if(localStorage && AUTO_LOGIN && _current_direct_message_recipient) {
+				localStorage.setItem(_recipient_key, _current_direct_message_recipient);
+			}
+		});
+
+		function send_direct_message() {
+			  if(!_current_login_account)
+					return;
+			  if(!_current_direct_message_recipient)
+					return;
+			  var msg = $("#_direct_message").val();
+
+			  if(msg.length == 0)
+					return;
+			  $.ajax({url: _node_url, data: {'requestType': 'sendMessage', 'chain': 2, 'recipient': _current_direct_message_recipient,
+											 'secretPhrase': _passphrase, 'feeNQT': FEE_NQT, 'deadline': DEADLINE,
+											 'messageToEncrypt': msg, 'messageToEncryptIsText': true, 'encryptedMessageIsPrunable': true
+											 }, type: 'POST',
+				success: function(data) {
+						var rtn_msg = $.parseJSON(data);
+						if(rtn_msg['errorDescription']) {
+							show_error('Error sending direct message: ' + rtn_msg['errorDescription']);
+						} else {
+							if(rtn_msg["transactionJSON"]) {
+								$("#_direct_message").val("");
+								show_unconfirm_direct_messages();
+							}
+
+						}
+				},
+				error: function() {
+					show_error('error sending direct messages');
+				}
+			});
+
+			$("#_direct_message").focus();
+
+		}
+		$('#_direct_message').keydown(function (e) {
+			if (e.ctrlKey && e.keyCode == 13) {
+				send_direct_message();
+			}
+		});
+		$( document ).ready(function() {
+				if(localStorage && AUTO_LOGIN) {
+					_passphrase = localStorage.getItem(_passphrase_key);
+					if(_passphrase && _passphrase.length > 0) {
+						_login();
+					}
+					_current_direct_message_recipient = localStorage.getItem(_recipient_key);
+					$("#account_message_recipient").val(_current_direct_message_recipient);
+					get_recipient_name();
+				}
+
+				show_unconfirm_direct_messages();
+				setInterval(show_unconfirm_direct_messages, REFRESH_TIMS*1000);
+		});
+		function get_recipient_name() {
+			var recipient = $("#account_message_recipient").val();
+			if(recipient.length > 0) {
+					$.ajax({url: _node_url, data: {'requestType': 'getAccount', 'account': recipient }, async: false,
+							success: function(data) {
+								var name = $.parseJSON(data)["name"];
+								if (name && name.length > 0) {
+									recipient_name = name;
+								}else {
+									recipient_name = '- No Name -';
+								}
+								$('#recipient_name').text(recipient_name);
+						}
+					});
+			}
+		}
+		function a_to_j(xel_timestamp) {
+			return (new Date(xel_timestamp*1000 + Date.UTC(2018)));
+		}
+		function rel_time(s) {
+			var now = new Date();
+			var secs_diff = (now - s) / 1000;
+			if(secs_diff < 60){
+			  return parseInt(secs_diff) + 's';
+			}
+			if(secs_diff < 3600){
+			  return parseInt(secs_diff/60) + 'm';
+			}
+			if(secs_diff <= 86400){
+			  return parseInt(secs_diff/3600) + 'h';
+			}
+		}
+		function time_to_burned(s) {
+			var now = new Date();
+			var secs_diff = (now - s) / 1000;
+			var secs_left = DEADLINE * 60 - secs_diff;
+			if(secs_left < 0)
+				secs_left = 0;
+
+			if(secs_left < 60){
+			  return parseInt(secs_left) + 's';
+			}
+			if(secs_left < 3600){
+			  return parseInt(secs_left/60) + 'm';
+			}
+			if(secs_left <= 86400){
+			  return parseInt(secs_left/3600) + 'h';
+			}
+		}
+
+		function build_unconfirm_direct_message_tag(mgs) {
+			var _message = `<div class='message direct_message unconfirmed_message ${(mgs['senderRS']==_current_login_account) ? 'self' : ''}' id='${mgs['attachment']['encryptedMessageHash']}'>
+								<div class='message_header'>
+									<span class='time_left' style="float:right;font-size:90%;color:#aaaa00;"> ${time_to_burned(a_to_j(mgs['timestamp']))} left</span>
+									<span class='sender' >${(mgs['senderRS']==_current_login_account) ? sender_name : recipient_name}<span class='account_note'> ${mgs['senderRS']}</span></span><span class='datatime'> ${rel_time(a_to_j(mgs['timestamp']))} ago</span>
+								</div>
+								<div class='message_body'>
+									<span class='message_content'>${escapeHtml(mgs['attachment']['message'])}</span>
+								</div>
+							</div>`;
+			return _message;
+		}
+  </script>
+</html>
