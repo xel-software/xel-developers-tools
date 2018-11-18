@@ -1,0 +1,25 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css">
+
+<title>XEL Balance</title>
+
+</head>
+<body>
+
+
+<form name="f1">
+  <center>
+    <p>XEL Account Balance API CALL example </p>
+    <input name="xelaccount" type="text" size="26"  placeholder="XEL-....-....-....-.....">
+    <button value="Go" type="button" onclick=JavaScript:xmlhttpPost("http://xel.org:17876/nxt")>Get balance</button>
+    <div id="result" ></div>
+  </center>
+</form>
+<canvas id="spiders" class="hidden-xs" width="1280" height="451"></canvas>
+
+<script src="getbalance.js"></script>
+
+
+</body>
+</html>
