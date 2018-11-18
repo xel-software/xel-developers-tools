@@ -14,4 +14,4 @@ But for chatting that’s quite enough, and it even brings some advantages:
 * No one can dig through your chat history or steal your messages — everything is gone after the deadlines.
 * An account with a verified public key is the only thing you need.
 
-![chat](chat.png)
+![chat](chat/chat.png)
