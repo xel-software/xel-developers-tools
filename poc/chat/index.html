@@ -271,16 +271,6 @@ button#btn_tweet {
     //animation-name: slow_blink;
    // animation-duration: 3s;
 }
-.time_left {
-    background-color: #ffff00;
-	padding:1px 5px;
-    -webkit-animation-name: example; /* Safari 4.0 - 8.0 */
-    -webkit-animation-duration: 4s; /* Safari 4.0 - 8.0 */
-	animation-iteration-count: infinite;
-    animation-name: slow_blink;
-    animation-duration: 3s;
-}
-
 @keyframes slow_blink {
     from {background-color: #ffffaa;}
     to {background-color: white;}
@@ -383,7 +373,7 @@ button#btn_tweet {
 		var FEE_XEL = 0.0000001;
 		var REFRESH_TIMS = 3;
 		var AUTO_LOGIN = true;
-		var DEADLINE = 30;
+		var DEADLINE = 15;
 		var FEE_NQT = 0;
 		var DEFAULT_TITLE = "XEL Messenger " + VERSION;
 
@@ -651,8 +641,7 @@ button#btn_tweet {
 		function build_unconfirm_direct_message_tag(mgs) {
 			var _message = `<div class='message direct_message unconfirmed_message ${(mgs['senderRS']==_current_login_account) ? 'self' : ''}' id='${mgs['attachment']['encryptedMessageHash']}'>
 								<div class='message_header'>
-									<span class='time_left' style="float:right;font-size:90%;color:#aaaa00;"> ${time_to_burned(a_to_j(mgs['timestamp']))} left</span>
-									<span class='sender' >${(mgs['senderRS']==_current_login_account) ? sender_name : recipient_name}<span class='account_note'> ${mgs['senderRS']}</span></span><span class='datatime'> ${rel_time(a_to_j(mgs['timestamp']))} ago</span>
+									<span class='sender' >${(mgs['senderRS']==_current_login_account) ? sender_name : recipient_name}<span class='account_note'> ${mgs['senderRS']}</span></span>
 								</div>
 								<div class='message_body'>
 									<span class='message_content'>${escapeHtml(mgs['attachment']['message'])}</span>
