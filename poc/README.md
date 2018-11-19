@@ -1,6 +1,6 @@
 # proof-of-concept apps
 
-#### Xel dApp chat v 0.1
+#### Xel dApp chat v 0.1.1
 
 It’s a Private Chat dApp build on the XEL platform.
 
@@ -13,5 +13,7 @@ But for chatting that’s quite enough, and it even brings some advantages:
 * Messages are instant, depending on the speed of broadcasting. It no longer depends on blocktime.
 * No one can dig through your chat history or steal your messages — everything is gone after the deadlines.
 * An account with a verified public key is the only thing you need.
+
+# You have to have full node running to use dApp or change to remote node
 
 ![chat](chat/chat.png)

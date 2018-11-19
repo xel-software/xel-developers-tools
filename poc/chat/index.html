@@ -368,7 +368,7 @@ button#btn_tweet {
 	}
   </script>
   <script>
-		var VERSION = 'v0.1';
+		var VERSION = 'v0.1.1';
 		var MAX_MESSAGES = 100;
 		var FEE_XEL = 0.0000001;
 		var REFRESH_TIMS = 3;
@@ -379,7 +379,7 @@ button#btn_tweet {
 
 		var _passphrase_key = window.location.href + '_a' + VERSION;
 		var _recipient_key = window.location.href + '_a_recp' + VERSION;
-		var _node_url = "http://xel.org:17876/nxt";
+		var _node_url = "http://localhost:17876/nxt";
 
 		var _current_login_account;
 		var _passphrase;
@@ -604,44 +604,11 @@ button#btn_tweet {
 					});
 			}
 		}
-		function a_to_j(xel_timestamp) {
-			return (new Date(xel_timestamp*1000 + Date.UTC(2018)));
-		}
-		function rel_time(s) {
-			var now = new Date();
-			var secs_diff = (now - s) / 1000;
-			if(secs_diff < 60){
-			  return parseInt(secs_diff) + 's';
-			}
-			if(secs_diff < 3600){
-			  return parseInt(secs_diff/60) + 'm';
-			}
-			if(secs_diff <= 86400){
-			  return parseInt(secs_diff/3600) + 'h';
-			}
-		}
-		function time_to_burned(s) {
-			var now = new Date();
-			var secs_diff = (now - s) / 1000;
-			var secs_left = DEADLINE * 60 - secs_diff;
-			if(secs_left < 0)
-				secs_left = 0;
-
-			if(secs_left < 60){
-			  return parseInt(secs_left) + 's';
-			}
-			if(secs_left < 3600){
-			  return parseInt(secs_left/60) + 'm';
-			}
-			if(secs_left <= 86400){
-			  return parseInt(secs_left/3600) + 'h';
-			}
-		}
 
 		function build_unconfirm_direct_message_tag(mgs) {
 			var _message = `<div class='message direct_message unconfirmed_message ${(mgs['senderRS']==_current_login_account) ? 'self' : ''}' id='${mgs['attachment']['encryptedMessageHash']}'>
 								<div class='message_header'>
-									<span class='sender' >${(mgs['senderRS']==_current_login_account) ? sender_name : recipient_name}<span class='account_note'> ${mgs['senderRS']}</span></span>
+								  <span class='sender' >${(mgs['senderRS']==_current_login_account) ? sender_name : recipient_name}<span class='account_note'> ${mgs['senderRS']}</span></span>
 								</div>
 								<div class='message_body'>
 									<span class='message_content'>${escapeHtml(mgs['attachment']['message'])}</span>
@@ -649,5 +616,6 @@ button#btn_tweet {
 							</div>`;
 			return _message;
 		}
+		//$<span class='timer' style="float:right;font-size:90%;color:#aaaa00;"> ${time_to_burned(a_to_j(mgs['timestamp']))} left</span>
   </script>
 </html>
