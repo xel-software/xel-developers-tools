@@ -379,7 +379,7 @@ button#btn_tweet {
 
 		var _passphrase_key = window.location.href + '_a' + VERSION;
 		var _recipient_key = window.location.href + '_a_recp' + VERSION;
-		var _node_url = "http://localhost:17876/nxt";
+		var _node_url = "http://127.0.0.1:17876/nxt";
 
 		var _current_login_account;
 		var _passphrase;
@@ -471,7 +471,7 @@ button#btn_tweet {
 					$("div.unconfirmed_direct_messages").empty();
 					return;
 				}
-				$.ajax({url: _node_url, data: {'requestType': 'getUnconfirmedTransactions', 'chain': 2, 'account': _current_login_account, 'account': _current_direct_message_recipient, 'lastIndex': MAX_MESSAGES}, async: false,
+				$.ajax({url: _node_url, data: {'requestType': 'getUnconfirmedTransactions', 'account': _current_login_account, 'account': _current_direct_message_recipient, 'lastIndex': MAX_MESSAGES}, async: false,
 					success: function(data) {
 						var rtn_msg = $.parseJSON(data);
 						if(rtn_msg['errorDescription']) {
@@ -545,7 +545,7 @@ button#btn_tweet {
 
 			  if(msg.length == 0)
 					return;
-			  $.ajax({url: _node_url, data: {'requestType': 'sendMessage', 'chain': 2, 'recipient': _current_direct_message_recipient,
+			  $.ajax({url: _node_url, data: {'requestType': 'sendMessage', 'recipient': _current_direct_message_recipient,
 											 'secretPhrase': _passphrase, 'feeNQT': FEE_NQT, 'deadline': DEADLINE,
 											 'messageToEncrypt': msg, 'messageToEncryptIsText': true, 'encryptedMessageIsPrunable': true
 											 }, type: 'POST',
