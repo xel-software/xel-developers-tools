@@ -1,0 +1,21 @@
+
+button, select {
+
+	color: #FFF;
+  }
+
+button, select {
+	border: 1px solid #aaa;
+	padding:1% 2%;
+   }
+
+  #result {
+  	font-family:sans-serif;
+  	font-size:16pt;
+   }
+
+.input {
+      grid-column: 1;
+      grid-row: 3;
+      background-color: #e6ecf0;
+    }

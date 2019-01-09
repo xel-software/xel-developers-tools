@@ -1,0 +1,134 @@
+/******************************************************************************
+ *
+ * Data Type Declarations
+ *
+ *  - At least 1 declaration is required
+ *  - Each data type can only be declared at most once
+ *  - Total size of declared memory usage cannot exceed 1MB
+ *
+ *  array_int    <number of ints>;
+ *  array_uint   <number of uints>;
+ *  array_long   <number of longs>;
+ *  array_ulong  <number of ulongs>;
+ *  array_float  <number of floats>;
+ *  array_double <number of double>;
+ *
+ *****************************************************************************/
+
+array_uint   1000;
+
+
+/******************************************************************************
+ *
+ * Submit Data For Verification Declarations
+ *
+ *  - Submit data declarations are optional
+ *  - The Unsigned Int array must be declared before declaring 'submit'
+ *  - If used, both submit_sz & submit_idx are required and must fit
+ *    within the u[] size.
+ *
+ *  submit_sz  <number of unsigned ints to send to node for validation>;
+ *  submit_idx <starting index of u[] array to extract submitted data from>;
+ *
+ *****************************************************************************/
+
+submit_sz  32;	// Tells miner to sumbit 32 uints for Bounty / POW validation
+submit_idx 0;	// Tells miner to extract this data from u[0] - u[31]
+
+
+/******************************************************************************
+ *
+ * User Defined Functions
+ *
+ *  - Optional
+ *  - Names can be made up of numbers (0-9), letters (a-z), and underscores '_'
+ *  - Names cannot begin with any reserved word in the ElasticPL language
+ *
+ *  function <function name> { }
+ *
+ *****************************************************************************/
+
+function example_function_1 {
+  // Add some code here - This is just dummy code that creates some random #s
+  repeat (u[100], 32, 32) {               // Repeat 32 times using u[100] as loop counter
+    u[0] = ( m[4] <<< u[100] ) ^ u[100];  // m[4] - m[8] have random unsigned ints
+  }
+}
+
+function example_function_2 {
+  // Add some code here - This is just dummy code that adds a random #
+  repeat (u[100], 32, 32) {  // Repeat 32 times using u[100] as loop counter
+    u[0] = u[0] + m[5];      // m[5] is a random unsigned int
+  }
+}
+
+
+/******************************************************************************
+ *
+ * Main Function
+ *
+ *  - Main Function is required
+ *  - This is the entry point for the ElasticPL job
+ *  - Main Function cannot be called by any other function
+ *  - Must perform one of the following verification steps (not both)
+ *    - Call verify() function
+ *        or
+ *    - Use 'verify_bty(<expression>)' and
+ *    - Use 'verify_pow(uint1, uint2, uint3, uint4)'
+ *
+ *  function main { }
+ *
+ *****************************************************************************/
+
+function main {
+
+  // When using storage you may want to do some special processing on Round 0
+  if( m[1] == 0 ) {	// m[1] contains the Round Number
+    example_function_1();
+  }
+  else {
+    // Add some code here - Just copies storage to u[0] - u[31]
+    repeat (u[100], 32, 32) {  // Repeat 32 times using u[100] as loop counter
+      u[0] = s[u[100]];        // s[0] - s[31] contain the stored values
+    }
+  }
+
+  // Call an example function
+  example_function_2();
+  
+  // Call the Verify Function
+  verify();
+  
+  // Or use the 'verify_' statements
+//  u[200] = u[0] + u[1];
+//  verify_bty(u[200] < 1000)
+//  verify_pow(u[10], u[20], u[100], u[200])
+}
+
+
+/******************************************************************************
+ *
+ * Verify Function
+ *
+ *  - Verify Function is required
+ *  - This is the logic to determine if a Bounty or POW Solution has been found
+ *  - Must verify the Bounty solution by using 'verify_bty(<expression>)'
+ *  - Must verify the POW solution by using 'verify_pow(uint1, uint2, uint3, uint4)'
+ *
+ *  function verify { }
+ *
+ *****************************************************************************/
+
+function verify {
+
+  u[200] = u[0] + u[1];
+
+  // The Expression used by 'verify_bty' must evaluate to True or False
+  verify_bty(u[200] < 1000)
+  
+  // The 'verify_pow' statement can use any 4 uints in the program.
+  // The Author should attempt to pick 4 uints that will differ between
+  // runs to help ensure that miners are actually searching for solutions.
+  verify_pow(u[10], u[20], u[100], u[200])
+
+}
