@@ -1242,3 +1242,98 @@ http://localhost:17876/nxt?requestType=signTransaction&unsignedTransactionBytes=
 }
 ```
 -------------------
+# 8  Token Operations
+-------------------
+### 8.1 Decode File Token
+
+* Request:
+
+```
+http://localhost:17876/nxt?requestType=decodeFileToken&file=test.txt&token=u8q9ps0gdoo2bl158p4llpar583ld0cgejat9qnrgrgde4l5uscgan7fu25hi...
+```
+The request is shown above in URL format for consistency. The actual request must be an HTTP POST request with a multipart content type. For example, the corresponding cURL command is as follows:
+
+```
+curl -F requestType=generateFileToken -F file=@test.txt -F secretPhrase="secretPhrase" http://localhost:17876/nxt
+```
+* Response:
+
+```
+{
+"valid": true,
+"accountRS": "XEL-MAYC-ZZ3Y-YX56-6NH52",
+"requestProcessingTime": 3,
+"account": "15295723609781267838",
+"timestamp": 49748229
+}
+```
+
+-------------------
+### 8.2 Decode Token
+
+* Request:
+
+```
+http://localhost:17876/nxt?requestType=decodeToken&website=test&token=u8q9ps0gdoo2bl158p4llpar583ld0cgejat9qnrgrgde4l5ut8bgn...
+```
+
+* Response:
+
+```
+{
+ "valid": true,
+ "accountRS": "XEL-MAYC-ZZ3Y-YX56-6NH52",
+ "requestProcessingTime": 2,
+ "account": "15295723609781267838",
+ "timestamp": 49762488
+}
+```
+-------------------
+### 8.3 Generate File Token
+
+* Request:
+
+```
+http://localhost:17876/nxt?requestType=generateFileToken&secretPhrase=secretPhrase&file=test.txt
+```
+
+The request is shown above in URL format for consistency. The actual request must be an HTTP POST request with a multipart content type. For example, the corresponding cURL command is as follows:
+
+```
+curl -F requestType=generateFileToken -F file=@test.txt -F secretPhrase="secretPhrase" http://localhost:17876/nxt
+
+```
+
+* Response:
+
+```
+{
+"valid": true,
+"accountRS": "XEL-MAYC-ZZ3Y-YX56-6NH52",
+"requestProcessingTime": 4,
+"account": "15295723609781267838",
+"timestamp": 49748229,
+"token": "u8q9ps0gdoo2bl158p4llpar583ld0cgejat9qnrgrgde4l5uscgan7fu25hi..."
+}
+```
+-------------------
+### 8.4 Generate Token
+
+* Request:
+
+```
+http://localhost:17876/nxt?requestType=generateToken&secretPhrase=secretPhrase&website=test
+```
+
+* Response:
+
+```
+{
+ "valid": true,
+ "accountRS": "XEL-MAYC-ZZ3Y-YX56-6NH52",
+ "requestProcessingTime": 4,
+ "account": "15295723609781267838",
+ "timestamp": 49762488,
+ "token": "u8q9ps0gdoo2bl158p4llpar583ld0cgejat9qnrgrgde4l5ut8bgn..."
+}
+```
